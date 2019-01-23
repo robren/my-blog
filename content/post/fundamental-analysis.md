@@ -4,7 +4,7 @@ description: Curious to see where the heck the description appears.
 date: "2019-01-10"
 categories: ["Investing"]
 tags: ["python","fundamentals", "quandl", "sharadar"]
-draft: true
+draft: false
 ---
 This post describes how I wrote a python based tool for allow me to obtain reliable stock fundamental
 data and ratio in an automated way. I outline a few
