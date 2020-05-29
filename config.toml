@@ -5,7 +5,7 @@ title = "Rob Rennison's Blog"
 preserveTaxonomyNames = true
 enableRobotsTXT = true
 enableEmoji = true
-theme = "hugo-theme-even"
+theme = "even"
 
 # Syntax highlighting by Chroma. NOTE: Don't enable `highlightInClient` and `chroma` at the same time!
 pygmentsOptions = "linenos=table"
@@ -13,23 +13,23 @@ pygmentsCodefences = true
 pygmentsUseClasses = true
 pygmentsCodefencesGuessSyntax = true
 
-hasCJKLanguage = false     # has chinese/japanese/korean ? 
-paginate = 5                                              
+hasCJKLanguage = false     # has chinese/japanese/korean ?
+paginate = 5
 
 disqusShortname = "funwithcontainers"      # disqus_shortname
 googleAnalytics = "UA-76358911-2"    # UA-XXXXXXXX-X
 
-copyright = ""            # default: author.name ↓        
+copyright = ""            # default: author.name ↓
 
-[author]                  # essential                     
+[author]                  # essential
   name = "Rob Rennison"
 
-[sitemap]                 # essential                     
+[sitemap]                 # essential
   changefreq = "monthly"
   priority = 0.5
   filename = "sitemap.xml"
 
-[[menu.main]]             # config your menu              
+[[menu.main]]             # config your menu
   name = "Home"
   weight = 10
   identifier = "home"
@@ -54,41 +54,41 @@ copyright = ""            # default: author.name ↓
   version = "4.x"           # Used to give a friendly message when you have an incompatible update
   debug = false             # If true, load `eruda.min.js`. See https://github.com/liriliri/eruda
 
-  since = "2016"            # Site creation time          
+  since = "2016"            # Site creation time
 
-  # site info (optional)                                  
-  logoTitle = "Rob's Blog"        # default: the title value    
+  # site info (optional)
+  logoTitle = "Rob's Blog"        # default: the title value
   keywords = ["Hugo", "blog","even"]
   description = "Robert Rennison's Personal Blog Site."
 
-  # paginate of archives, tags and categories             
+  # paginate of archives, tags and categories
   archivePaginate = 5
 
-  # show 'xx Posts In Total' in archive page ?            
+  # show 'xx Posts In Total' in archive page ?
   showArchiveCount = false
 
   # The date format to use; for a list of valid formats, see https://gohugo.io/functions/format/
   dateFormatToUse = "2006-01-02"
 
-  # show word count and read time ?                       
+  # show word count and read time ?
   moreMeta = true
 
   # Syntax highlighting by highlight.js
   highlightInClient = false
 
   # Some global options, you can also close or open something in front matter for a single post, see more information from `archetypes/default.md`.
-  toc = true                                                                            
-  autoCollapseToc = false   # Auto expand and collapse toc                              
-  fancybox = true           # see https://github.com/fancyapps/fancybox                 
+  toc = true
+  autoCollapseToc = false   # Auto expand and collapse toc
+  fancybox = true           # see https://github.com/fancyapps/fancybox
 
   # mathjax
-  mathjax = false           # see https://www.mathjax.org/                              
-  mathjaxEnableSingleDollar = false                                                     
-  mathjaxEnableAutoNumber = false                                                       
+  mathjax = false           # see https://www.mathjax.org/
+  mathjaxEnableSingleDollar = false
+  mathjaxEnableAutoNumber = false
   mathjaxUseLocalFiles = false  # You should install mathjax in `yout-site/static/lib/mathjax`
 
-  postMetaInFooter = true   # contain author, lastMod, markdown link, license           
-  linkToMarkDown = false    # Only effective when hugo will output .md files.           
+  postMetaInFooter = true   # contain author, lastMod, markdown link, license
+  linkToMarkDown = false    # Only effective when hugo will output .md files.
   contentCopyright = ''     # e.g. '<a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>'
 
 
@@ -99,7 +99,7 @@ copyright = ""            # default: author.name ↓
   customCSS = []
   customJS = []
 
-  [params.publicCDN]        # load these files from public cdn                          
+  [params.publicCDN]        # load these files from public cdn
     enable = true
     jquery = '<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>'
     slideout = '<script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>'
@@ -114,8 +114,8 @@ copyright = ""            # default: author.name ↓
   # Display a message at the beginning of an article to warn the readers that it's content may be outdated.
   [params.outdatedInfoWarning]
     enable = false
-    hint = 30               # Display hint if the last modified time is more than these days ago.    
-    warn = 180              # Display warning if the last modified time is more than these days ago.    
+    hint = 30               # Display hint if the last modified time is more than these days ago.
+    warn = 180              # Display warning if the last modified time is more than these days ago.
 
   [params.gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
     owner = ""              # Your GitHub ID
@@ -138,7 +138,7 @@ copyright = ""            # default: author.name ↓
     options = ""            # default: "{theme: 'simple'}"
 
 
-  [params.social]                                         
+  [params.social]
     a-email = "mailto:rob@robren.net"
     e-linkedin = "http://localhost:1313"
     g-github = "https://github.com/robren"
@@ -149,4 +149,3 @@ copyright = ""            # default: author.name ↓
     anonymizeIP = true      # 12.214.31.144 -> 12.214.31.0
   [privacy.youtube]
     privacyEnhanced = true
-

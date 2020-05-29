@@ -1,0 +1,202 @@
+#+title: Static website combined with Web applications
+#+markup: org
+#+subtitle: emacs everywhere
+#+date: 2020-05-28
+#+tags[]: hugo, web-apps
+#+draft: false
+* Combining a static website  with a  web  application
+I'd often wondered how I could serve my static html blog alongside
+some web applications. Did the simplicity and ease of using Hugo
+to generate nicely rendered mobile friendly blog posts somehow restrict me
+if I wanted to create some dynamic web applications?
+
+The solution turns out to be relatively simply when you know
+how. But ... figuring out how, leads you down a rabbit hole of new
+things to understand and configure:-
+
+- Flask
+- WSGI ecosystem
+- Gunicorn
+- nginx  with Reverse Proxy
+
+
+
+What I'd like to do is serve the static content at the root
+of my domain robren.net and the web apps at sub-directories within this
+domain e.g. robren.net/fundamentals
+
+The term "web application" or web app can mean many things, so I'd better be clear about
+what I mean.  I'm referring to a [[https://en.wikipedia.org/wiki/Dynamic_web_page][dynamic web page]]  and one which is
+implemented server side.
+
+The web application will be written as a Flask application. Flask
+being a popular, simple web application framework, which helps you to write python based web applications.
+
+Given that I've made the choice of Flask, I then need to figure out how to hook things up so that
+I can route certain traffic to the Flask app and other traffic can be served as static HTML.
+
+I'll first review some relevant technology and then describe how I glued these pieces together.
+
+Having spent a career in networking, understanding the component "plumbing" is always of interest to me.
+
+Let's dive into Flask for starters. We'll start by working backwards
+from Flask and how it "speaks" to the web app and to thw web server.
+
+{{< figure src="/components-1.png" title="Pieces of the puzzle" >}}
+* Flask
+Flask is a so-called [[https://en.wikipedia.org/wiki/Web_framework][web framework]]; these typically abstract away the
+details of dealing with raw HTML as well as provide libraries for session
+management and interfaces to templating libraries.
+
+It's the magic of templating mixed in with some raw HTML which
+provides some of the key methods to display the output from dynamic
+applications. That's a detail for another day.
+
+Flask or rather any python based framework imposes some requirements
+about how a web server communicates to it, requiring the webserver to
+use the WSGI interface.
+
+* WSGI Ecosystem
+
+
+The [[https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface][Web Server Gateway Interface]] is a specification defining how Web Wervers
+can forward requests to python based web applications. The underlying protocol between the webserver and the
+
+Given that I've chosen to use a Python based Web Application
+Framework, Flask, then I'll need to find a Web Server which supports
+WSGI.
+
+I found in stackoverflow, where else, this thread [[https://stackoverflow.com/questions/38601440/what-is-the-point-of-uwsgi][What is the point of uWSGI]] which in turn led to
+[[https://www.ultravioletsoftware.com/single-post/2017/03/23/An-introduction-into-the-WSGI-ecosystem][Blog post attempting to explain WSGI ecosystem]]
+
+The blog post does clarify some things, see the section "How it all
+fits together" The diagram at the bottom of the blog is good. Here's a
+good talk explaining WSGI in more depth [[Graham Dumpleton - Secrets of
+a WSGI Master PyCon 2018]]
+
+** Note the potential confusion with the WSGI terminology
+- There's WSGI the interface specification.
+- Then we have uwsgi, the binary protocol over which the Server speaks to the Web framework.
+- Then, we've got an application called [[https://uwsgi-docs.readthedocs.io/en/latest/][uWSGI]] which is apparently a  popular web
+  server which implements the WSGI specification. It "speaks" HTTP on one
+  side and uwsgi on the other.
+
+-----------------
+
+* Picking a WSGI Server.
+
+If the Web Server was able to act as a WSGI gateway, then all we'd
+need to do it configure the webserver, indeed there is the uWSGI
+gateway I could potentially have chosen to use. Alas life is not so
+simple.
+
+- uWSGI is not nexessarily "production ready or hardened".
+- I Also need reverse proxy support from my webserver, more on this later.
+- I'm not so keen on the level of documentation for uWSGI.
+- I'm already using a web server, nginx.
+
+** Enter gunicorn.
+[[https://gunicorn.org/][Gunicorn]] is a popular WSGI implementation, appears well documented, is
+updated frequently and is written in python.
+
+The Gunicorn [[https://gunicorn.org/#deployment][documentation]] recommends that it's best to use Gunicorn
+behind a proxy server and recommend the use of nginx. This fits right
+in with our existing constraints.
+
+* The gunicorn hello world
+Before looking at how gunicorn can be made to work with flask. Lets understand how it can work with jsut some bare bones python code.
+
+The [[https://gunicorn.org/][Gunicorn front page]] shows how to run a simple prog
+
+#+BEGIN_SRC term
+
+$ pip install gunicorn
+  $ cat myapp.py
+    def app(environ, start_response):
+        data = b"Hello, World!\n"
+        start_response("200 OK", [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(data)))
+        ])
+        return iter([data])
+  $ gunicorn -w 4 myapp:app
+  [2014-09-10 10:22:28 +0000] [30869] [INFO] Listening at: http://127.0.0.1:8000 (30869)
+  [2014-09-10 10:22:28 +0000] [30869] [INFO] Using worker: sync
+  [2014-09-10 10:22:28 +0000] [30874] [INFO] Booting worker with pid: 30874
+  [2014-09-10 10:22:28 +0000] [30875] [INFO] Booting worker with pid: 30875
+  [2014-09-10 10:22:28 +0000] [30876] [INFO] Booting worker with pid: 30876
+  [2014-09-10 10:22:28 +0000] [30877] [INFO] Booting worker with pid: 30877
+
+#+END_SRC
+
+Notice how in the flask app below, we dont need to hand craft the HTML headers.
+
+
+
+* A sample nginx to gunicorn to flask application setup
+
+This comprehenzive  [[https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04][Digital Ocean Gunicorn and Flask tutorial]] shows how to hook up the Gunicorn server to a Flask app.
+It covers:
+- Creation of a python virtual environment
+- Installation of Flask and Gunicorn
+- Configration of Flask to interface with a simple app
+- Configuration of Gunicorn to interface to Flask
+- Systemd configuration to automatically start Gunicorn and point it at the Flask app
+- Configuration of nginx to be a proxy to forward requests to a socket established for nginx to Gunicorn communication
+
+This provides a great starting point for what I set out to do. Where
+it leaves off and where I will pick up it how to have have nginx
+selectively route traffic either to the Gunicorn server or serve up static website content.
+
+All of that to serve up:
+** The sample hello world flask app.
+
+#+BEGIN_SRC python
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "<h1 style='color:blue'>Hello There!</h1>"
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
+
+#+END_SRC
+
+
+* Nginx configuration
+
+Now I need to figure out how I can  make the forwarding of this to be at a given directory like robren.net/myapp
+
+This [[https://www.youtube.com/watch?v=PTmFbYG0hK4][Youtube: Configure multiple apps to be accesible all via ports 80]]
+contains the crux of what I want. Where the / root might be my static files and a subdirectory e.g  /my-app would be forwarded to Gunicorn.
+
+
+[[https://nginx.org/en/docs/beginners_guide.html][The Nginx beginners guide]] outlines the use of the **location block**
+and how this can be combined with a URI directive and the **root**
+directive to form the path to where to serve a given file from on the
+local filesystem. I combined this with the reverse proxy configuration
+using the [[https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass][proxy_pass directive]] to redirect the incoming request to a
+unix domain socket. The Gunicorn server listening on this socket.
+
+My nginx configration looks like this:
+
++BEGIN_EXAMPLE
+# This lives in /etc/nginx/sites-available and is linked to in sites-enabled
+server {
+	listen 80 default_server;
+	server_name localhost;
+
+    # Serve the static site from local folder /data/www
+	location / {
+	root /data/www;
+	}
+
+    # Forward requests ending in /myapp to the unix domain socket in the project directory
+
+	location /myapp {
+	    include proxy_params;
+	    proxy_pass http://unix:/home/test/Code/myproject.sock;
+}
++END_EXAMPLE
