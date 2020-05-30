@@ -201,4 +201,15 @@ server {
 }
 #+END_SRC
 
+The top level of my robren.net domain is served from /data/www on the
+web server and any apps will be served in this example by going to
+robren.net/myapp.
 * Conclusion
+I've now figured out how I can combine both the ease of use of writing
+blog entries in either Markdown or even emacs org files.  While I
+haven't yet updated the hosting server, with Gunicorn, Flask and a
+test application yet, I now have a clear understanding for how I will
+be able to do it.  And that's the point of this blog; for me to force
+myself to write, in a, slightly, more readable fashion than my notes, my current
+understanding and mental model of how various web "components" can be
+combined together.
