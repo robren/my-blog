@@ -1,8 +1,8 @@
-#+title: Static website combined with Web applications
+#+title: Combining a Static Website with Web applications
 #+markup: org
 #+subtitle: emacs everywhere
 #+date: 2020-05-28
-#+tags[]: hugo, web-apps
+#+tags[]:hugo, web-apps, nginx, gunicorn,wsgi
 #+draft: false
 * Combining a static website  with a  web  application
 I'd often wondered how I could serve my static html blog alongside
@@ -40,7 +40,7 @@ I'll first review some relevant technology and then describe how I glued these p
 Having spent a career in networking, understanding the component "plumbing" is always of interest to me.
 
 Let's dive into Flask for starters. We'll start by working backwards
-from Flask and how it "speaks" to the web app and to thw web server.
+from Flask and how it "speaks" to the web app and to the web server.
 
 {{< figure src="/components-1.png" title="Pieces of the puzzle" >}}
 * Flask
@@ -53,20 +53,20 @@ provides some of the key methods to display the output from dynamic
 applications. That's a detail for another day.
 
 Flask or rather any python based framework imposes some requirements
-about how a web server communicates to it, requiring the webserver to
+about how a web server communicates to it, requiring the web server to
 use the WSGI interface.
 
 * WSGI Ecosystem
 
 
-The [[https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface][Web Server Gateway Interface]] is a specification defining how Web Wervers
-can forward requests to python based web applications. The underlying protocol between the webserver and the
+The [[https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface][Web Server Gateway Interface]] is a specification defining how Web servers
+can forward requests to python based web applications. The underlying protocol between the web server and the
 
 Given that I've chosen to use a Python based Web Application
 Framework, Flask, then I'll need to find a Web Server which supports
 WSGI.
 
-I found in stackoverflow, where else, this thread [[https://stackoverflow.com/questions/38601440/what-is-the-point-of-uwsgi][What is the point of uWSGI]] which in turn led to
+I found in stack-overflow, where else, this thread [[https://stackoverflow.com/questions/38601440/what-is-the-point-of-uwsgi][What is the point of uWSGI]] which in turn led to
 [[https://www.ultravioletsoftware.com/single-post/2017/03/23/An-introduction-into-the-WSGI-ecosystem][Blog post attempting to explain WSGI ecosystem]]
 
 The blog post does clarify some things, see the section "How it all
@@ -81,17 +81,17 @@ a WSGI Master PyCon 2018]]
   server which implements the WSGI specification. It "speaks" HTTP on one
   side and uwsgi on the other.
 
------------------
+
 
 * Picking a WSGI Server.
 
 If the Web Server was able to act as a WSGI gateway, then all we'd
-need to do it configure the webserver, indeed there is the uWSGI
+need to do it configure the web server, indeed there is the uWSGI
 gateway I could potentially have chosen to use. Alas life is not so
 simple.
 
-- uWSGI is not nexessarily "production ready or hardened".
-- I Also need reverse proxy support from my webserver, more on this later.
+- uWSGI is not necessarily "production ready or hardened".
+- I Also need reverse proxy support from my web server, more on this later.
 - I'm not so keen on the level of documentation for uWSGI.
 - I'm already using a web server, nginx.
 
@@ -104,11 +104,11 @@ behind a proxy server and recommend the use of nginx. This fits right
 in with our existing constraints.
 
 * The gunicorn hello world
-Before looking at how gunicorn can be made to work with flask. Lets understand how it can work with jsut some bare bones python code.
+Before looking at how gunicorn can be made to work with flask. Lets understand how it can work with just some bare bones python code.
 
-The [[https://gunicorn.org/][Gunicorn front page]] shows how to run a simple prog
+The [[https://gunicorn.org/][Gunicorn front page]] shows how to run a simple program
 
-#+BEGIN_SRC term
+#+BEGIN_SRC shell
 
 $ pip install gunicorn
   $ cat myapp.py
@@ -129,23 +129,23 @@ $ pip install gunicorn
 
 #+END_SRC
 
-Notice how in the flask app below, we dont need to hand craft the HTML headers.
+Notice how in the flask app below, we don't need to hand craft the HTML headers.
 
 
 
 * A sample nginx to gunicorn to flask application setup
 
-This comprehenzive  [[https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04][Digital Ocean Gunicorn and Flask tutorial]] shows how to hook up the Gunicorn server to a Flask app.
+This comprehensive  [[https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04][Digital Ocean Gunicorn and Flask tutorial]] shows how to hook up the Gunicorn server to a Flask app.
 It covers:
 - Creation of a python virtual environment
 - Installation of Flask and Gunicorn
-- Configration of Flask to interface with a simple app
+- Configuration of Flask to interface with a simple app
 - Configuration of Gunicorn to interface to Flask
 - Systemd configuration to automatically start Gunicorn and point it at the Flask app
 - Configuration of nginx to be a proxy to forward requests to a socket established for nginx to Gunicorn communication
 
 This provides a great starting point for what I set out to do. Where
-it leaves off and where I will pick up it how to have have nginx
+it leaves off and where I will pick up is how to have have nginx
 selectively route traffic either to the Gunicorn server or serve up static website content.
 
 All of that to serve up:
@@ -169,8 +169,8 @@ if __name__ == "__main__":
 
 Now I need to figure out how I can  make the forwarding of this to be at a given directory like robren.net/myapp
 
-This [[https://www.youtube.com/watch?v=PTmFbYG0hK4][Youtube: Configure multiple apps to be accesible all via ports 80]]
-contains the crux of what I want. Where the / root might be my static files and a subdirectory e.g  /my-app would be forwarded to Gunicorn.
+This [[https://www.youtube.com/watch?v=PTmFbYG0hK4][YouTube: Configure multiple apps to be accessible all via ports 80]]
+contains the crux of what I want. Where the / root might be my static files and a sub-directory e.g  /my-app would be forwarded to Gunicorn.
 
 
 [[https://nginx.org/en/docs/beginners_guide.html][The Nginx beginners guide]] outlines the use of the **location block**
@@ -178,11 +178,11 @@ and how this can be combined with a URI directive and the **root**
 directive to form the path to where to serve a given file from on the
 local filesystem. I combined this with the reverse proxy configuration
 using the [[https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass][proxy_pass directive]] to redirect the incoming request to a
-unix domain socket. The Gunicorn server listening on this socket.
+Unix domain socket. The Gunicorn server listening on this socket.
 
-My nginx configration looks like this:
+My nginx configuration looks like this:
 
-+BEGIN_EXAMPLE
+#+BEGIN_SRC shell
 # This lives in /etc/nginx/sites-available and is linked to in sites-enabled
 server {
 	listen 80 default_server;
@@ -199,4 +199,6 @@ server {
 	    include proxy_params;
 	    proxy_pass http://unix:/home/test/Code/myproject.sock;
 }
-+END_EXAMPLE
+#+END_SRC
+
+* Conclusion

@@ -6,9 +6,9 @@ categories: ["Investing"]
 tags: ["python","fundamentals", "quandl", "sharadar"]
 draft: false
 ---
-This post describes how I wrote a python based tool for allow me to obtain reliable stock fundamental
-data and ratio in an automated way. I outline a few
-approaches I tried and then briefly describe the tool [quandl_fund_xlsx](https://github.com/robren/quandl_fund_xlsx) and it's use. The linked github page contains a README with instructions for installing and using the tool, I'll not be covering that here but providing a bit of a back story regarding the rationale for creating the tool.
+This post describes how I wrote a python based tool to allow me to obtain reliable stock fundamental
+data and ratios in an automated way. I outline a few
+approaches I tried and then briefly describe the tool [quandl_fund_xlsx](https://github.com/robren/quandl_fund_xlsx) and it's use. The linked github page contains a README with instructions for installing and using the tool, I'll not be covering that here but providing a bit of a back-story regarding the rationale for creating the tool.
 
 # The Problem and Requirements
 
@@ -21,8 +21,8 @@ obtain the data for a set or portfolio of stocks without having to manually go
 to some website, click, download, import into excel, massage to find ratios
 etc..
 
-In addition to the fundamental data from the Balance Sheet, Income Statemnt
-and Statement of cash flows, I wanted lot's of finacial ratios. Ideally I'd be
+In addition to the fundamental data from the Balance Sheet, Income Statement
+and Statement of cash flows, I wanted lot's of financial ratios. Ideally I'd be
 able to customize which ratios are calculated.
 
 Finally I wanted the output data to be in the form of an excel spreadsheet so
@@ -33,9 +33,9 @@ between individual equities.
 
 ## Web Scraping
 
-I tried to webscrape the morningstar site using the Python Beautiful Soup
+I tried to web-scrape the Morningstar site using the Python Beautiful Soup
 library; unfortunately the Morningstar pages are delivered as a bunch of
-javascript to the browser so there's nothing to scrape.
+JavaScript to the browser so there's nothing to scrape.
 
 I could have scraped yahoo finance or google finance, but  the more I looked
 the more I saw that things change on these pages or the page goes away  and that scraping in general
@@ -44,7 +44,7 @@ was going to be fragile and at the mercy of the page provider.
 ## Using the raw XBRL data from Edgar
 
 After having read about the XBRL data format for corporate financial filing,
-I created a CLI python package
+I created a command line interface (CLI)  python package
 [sec_edgar_download](https://github.com/robren/sec_edgar_download) to download
 filings from the SEC Edgar site in XBRL format.  Once I had my raw XBRL filing
 data I set about writing an XBRL parser to extract the data. Long story short,
@@ -55,7 +55,7 @@ wanted to bite off. Consider just one of the items reported, that of revenue [Fi
 I now wondered if there were any free or inexpensive reliable sources of
 already parsed corporate filing data with a nice API to access it. After some more research and
 experimentation I discovered [Quandl](https://www.quandl.com/) and more specifically the [Sharadar
-Fundamentals database](http://www.sharadar.com/).  
+Fundamentals database](http://www.sharadar.com/).
 
 
 # The solution: Quandl and Sharadar
@@ -75,9 +75,9 @@ The python API allows for the data to be provided in a python data structure cal
 The tool I ended up creating is a python based command line tool which takes
 as input a list of tickers, or a ticker file, and outputs an excel workbook
 with a separate sheet for every ticker with  datapoints given for each
-reporting period in a seaprate column. I calculate over 30 additional ratios
+reporting period in a separate column. I calculate over 30 additional ratios
 as well as Compound Annual Growth rates for all values, as I read and learn
-more I'm always adding yet another metric for curiousity and interests sake.
+more I'm always adding yet another metric for curiosity and interests sake.
 
 
 {{< figure src="/Tech-1.png" title="The output excel Workbook" >}}
@@ -85,7 +85,7 @@ more I'm always adding yet another metric for curiousity and interests sake.
 
 ## Caveat Emptor
 
-In addition to checking he disclaimer and the LICENSE file on the projext github page  it's important to apply common sense and  question the values calculated.
+In addition to checking the disclaimer and the LICENSE file on the project github page  it's important to apply common sense and  question the values calculated.
 
 In certain cases some ratios might look too good to be true or excessively
 bad. It's worth examining closely the SEC filing calculating the "old
@@ -96,13 +96,12 @@ fashioned way" to double check these values. One simple example is that of Inter
   denominator (EBIT/Interest expense)  will be invalid, these will show up as
   "inf" on the spreadsheet. The interest payments will often be separately
   disclosed, for example for MSFT  under the "Notes to Financial statements"
-  in the section "Other Income (Expense) NET. 
+  in the section "Other Income (Expense) NET.
 
 # Conclusion
 
-Having the ability to rapidly and programatically download information for an individual ticker or a set of tickers (It's very informative to compare companies within the same industry group) makes it more likely that you will keep up to date with a companies fundamenentals and either:
+Having the ability to rapidly and programmatically download information for an individual ticker or a set of tickers (It's very informative to compare companies within the same industry group) makes it more likely that you will keep up to date with a companies fundamentals and either:
 
 - Continue to get a warm feeling about holding a stock.
 - Decide that things are deteriorating and  consider selling.
 - In the case of the latest tip from someone opining on say Seeking Alpha be able to form your own opinion.
-
