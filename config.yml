@@ -1,0 +1,61 @@
+---
+baseURL: http://robren.net/
+languageCode: en
+defaultContentLanguage: en
+title: Rob Rennison's Blog
+enableRobotsTXT: true
+enableEmoji: true
+theme: hugo-PaperMod
+paginate: 20
+disqusShortname: funwithcontainers
+googleAnalytics: UA-76358911-2
+menu:
+  main:
+    - name: Home
+      weight: 10
+      url: /
+    - name: Posts
+      weight: 20
+      url: /post/
+    - name: Tags
+      weight: 30
+      url: /tags/
+    - name: Categories
+      weight: 40
+      url: /categories/
+taxonomies:
+  category: categories
+  series: series
+  tag: tags
+  author: authors
+
+
+params:
+  author: Rob Rennison
+  defaultTheme: auto
+  ShowReadingTime: true
+
+  displayFullLangName: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowRssButtonInSectionTermList: true
+  ShowToc: true
+
+  homeInfoParams:
+    Title: Hi there!
+    Content: >
+          An experimental blog where I occasionally post about technical topics
+          which pique my interest
+  socialIcons:
+    - name: "Github"
+      url: https://github.com/robren/
+  keywords:
+    - personal
+    - blog
+    - development
+  description: Robert Rennison's Personal Blog Site.
+  debug: false
+  since: '2016'
+  logoTitle: Rob's Blog
+  dateFormatToUse: '2006-01-02'

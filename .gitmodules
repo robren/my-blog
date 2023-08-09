@@ -1,3 +1,12 @@
 [submodule "themes/hugo-theme-even"]
 	path = themes/hugo-theme-even
 	url = https://github.com/olOwOlo/hugo-theme-even.git
+[submodule "themes/tophat"]
+	path = themes/tophat
+	url = https://github.com/sergiobarriel/tophat-theme.git
+[submodule "themes/beautifulhugo"]
+	path = themes/beautifulhugo
+	url = https://github.com/halogenica/beautifulhugo.git
+[submodule "themes/hugo-PaperMod"]
+	path = themes/hugo-PaperMod
+	url = https://github.com/adityatelange/hugo-PaperMod.git

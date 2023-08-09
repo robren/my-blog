@@ -26,7 +26,7 @@ clean:
 	[ ! -d $(OUTPUTDIR) ] || rm -rf $(OUTPUTDIR)
 
 publish:
-	$(HUGO) 
+	$(HUGO) --config="config.yml"
 
 serve:
 	$(HUGO)  server 
